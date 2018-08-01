@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Nihon News</string>
+    <string name="no_News">No News found.</string>
+    <string name="no_connection">No Internet Connection.</string>
+</resources>
