@@ -33,12 +33,12 @@ public class QueryUtils {
         }
 
         //create URL
-        URL articleUrl = createUrl(requestUrl);
+        URL url = createUrl(requestUrl);
 
         //perform http request
         String jsonResponse = null;
         try {
-            jsonResponse = makeHttpRequest(articleUrl);
+            jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Problem making HTTP request", e);
         }
@@ -71,19 +71,14 @@ public class QueryUtils {
                 date = currentArticle.getString("webPublicationDate");
                 newsurl = currentArticle.getString("webUrl");
 
+
                 JSONArray authorArray = currentArticle.getJSONArray("tags");
                 author = "";
 
-                //check for author, if none provided, return null
-                if (authorArray.length() == 0) {
-                    return null;
-                } else {
-                    for (int a = 0; a < authorArray.length(); a++) {
-                        JSONObject currentAuthor = authorArray.getJSONObject(a);
-                        //extract author names
-                        author = currentAuthor.getString("webTitle");
-                    }
-
+                //check for author
+                if (!authorArray.isNull(0)){
+                    JSONObject currentTag = authorArray.getJSONObject(0);
+                    author = currentTag.getString("webTitle");
                 }
 
                 //create new News object
@@ -98,17 +93,17 @@ public class QueryUtils {
         } return articleList;
     }
 
-    private static String makeHttpRequest(URL articleUrl) throws IOException {
+    private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
         //check for null
-        if (articleUrl == null) {
+        if (url == null) {
             return jsonResponse;
         }
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         //create connection
         try {
-            urlConnection = (HttpURLConnection) articleUrl.openConnection();
+            urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");

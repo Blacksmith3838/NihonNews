@@ -38,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         mProgressBar = (ProgressBar) findViewById(R.id.spin_progress);
 
+        // Find a reference to the {@link ListView} in the layout
+        ListView articleListView = (ListView) findViewById(R.id.list);
+        articleListView.setEmptyView(mEmptyStateTextView);
+
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -56,14 +60,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mEmptyStateTextView.setText(R.string.no_connection);
         }
 
-
-
-
-        // Find a reference to the {@link ListView} in the layout
-        ListView articleListView = (ListView) findViewById(R.id.list);
-        articleListView.setEmptyView(mEmptyStateTextView);
-
-
         // Create a new {@link ArrayAdapter} of News
         mAdapter = new NewsAdapter(this, new ArrayList<News>());
         // Set the adapter on the {@link ListView}
@@ -73,13 +69,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //set onclick on the listView
         articleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
                 // Find the current News that was clicked on
                 News currentNews = mAdapter.getItem(position);
-
+Log.v("position", "we have postion");
                 // Convert the String URL into a URI object (to pass into the Intent constructor)
                 Uri NewsUri = Uri.parse(currentNews.getUrl());
-
+Log.v("url", "have url");
                 // Create a new intent to view the earthquake URI
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, NewsUri);
 
@@ -97,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(Loader<List<News>> loader, List<News> result) {
+    public void onLoadFinished(Loader<List<News>> loader, List<News> news) {
         mProgressBar.setVisibility(View.GONE);
         mEmptyStateTextView.setText(R.string.no_News);
         // Clear the adapter of previous News data
@@ -105,8 +101,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // If there is a valid list of {@link News}, then add them to the adapter's
         // data set. This will trigger the ListView to update.
-        if (result != null && !result.isEmpty()) {
-           mAdapter.addAll(result);
+        if (news != null && !news.isEmpty()) {
+           mAdapter.addAll(news);
         }
     }
 
